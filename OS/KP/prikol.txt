@@ -1,0 +1,3 @@
+g++ -o my_program -Iboost main.cpp
+./my_program test1.ini
+g++ -o my_program main.cpp

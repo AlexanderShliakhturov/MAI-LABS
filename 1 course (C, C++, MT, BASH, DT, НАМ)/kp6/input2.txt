@@ -1,0 +1,13 @@
+Smith	4	Intel i7	16	Nvidia GTX 1070	8	SATA	2	512	1	0	Windows 10
+
+Johnson	2	AMD Ryzen 5	8	AMD Radeon RX 5600	6	NVMe	1	256	0	1	Linux Mint
+
+Garcia	6	Intel i9	32	AMD Radeon RX 6900 XT	16	SAS	3	1024	2	2	Windows 11
+
+Davis	2	Intel i5	16	Intel UHD Graphics 630	2	SATA	1	128	0	0	macOS Catalina
+
+Wilso	8	AMD Ryzen 9	6	Nvidia RTX 3080	10	NVMe	4	4096	3	1	Windows 11
+
+Smith	44	Intel i7	164	Nvidia GTX 1070	84	SATA	24	5124	14	40	Windows 10
+
+Davis	2	Intel i5	16	Intel UHD Graphics 630	2	SATA	1	128	0	0	macOS Catalina

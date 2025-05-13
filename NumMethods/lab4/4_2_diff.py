@@ -1,3 +1,6 @@
+#РЕШЕНИЕ КРАЕВОЙ ЗАДАЧИ ДЛЯ ОДУ 2 ПОРЯДКА КОНЕЧНОРАЗНОСТНЫМ МЕТОДОМ
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 from math import atan, pi
@@ -22,7 +25,7 @@ def generate_points(a, b, h):
 def exact_solution(x):
     return x**2 + x + 1 + (x**2 + 1) * atan(x)
 
-# Коэффициенты уравнения y'' + p(x)y' + q(x)y = f(x)
+# Коэффициенты уравнения y'' + p(x)y' + q(x)y = f(x), формула 4.35
 def p(x):
     return 0  # уравнение не содержит y'
 def q(x):
@@ -31,7 +34,7 @@ def q(x):
 def f(x):
     return 0
 
-# Метод прогонки
+#функция для решения трехдиагональных систем
 def progonka(A, b):
     n = len(b)
     P = np.zeros(n)

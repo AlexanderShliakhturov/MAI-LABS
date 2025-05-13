@@ -1,3 +1,5 @@
+#СПЛАЙН ИНТЕРПОЛЯЦИЯ
+
 import numpy as np
 import matplotlib.pyplot as plt
 from lab1.progonka import progonka
@@ -9,6 +11,8 @@ f = np.array([100, 4, 1.2346, 0.59172, 0.34602])
 x_star = 0.8
 
 n = len(x)
+
+#массив h - массив из разностей x[i+1] - x[i]
 h = np.diff(x)
 
 # Построение диагональных массивов для СЛАУ (формулы 3.13)

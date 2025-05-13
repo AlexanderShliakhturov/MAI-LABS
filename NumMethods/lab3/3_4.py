@@ -1,3 +1,5 @@
+#ЧИСЛЕННОЕ ДИФФЕРЕНЦИРОВАНИЕ
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -31,8 +33,9 @@ def get_index(x_star, x):
 
 i = get_index(x_star, x)
 
+#По сути формулы ниже это производные интерполяционного многочлена второй степени в явном виде
 
-
+#Первая производная по формуле 3.20
 dy1 = (y[i + 1] - y[i]) / (x[i + 1] - x[i])
 dy2 = (y[i + 2] - y[i + 1]) / (x[i + 2] - x[i + 1])
 correction = (dy2 - dy1) / (x[i + 2] - x[i]) * (2 * x_star - x[i] - x[i + 1])
@@ -93,7 +96,7 @@ plt.savefig("derivative")
 
 
 sec_deriv = (tan(x_star+1e-3) - tan(x_star))/+1e-3
-print(f"Вторая производная по функции интерполяции = {sec_deriv}")
+# print(f"Вторая производная по функции интерполяции = {sec_deriv}")
 
 
 

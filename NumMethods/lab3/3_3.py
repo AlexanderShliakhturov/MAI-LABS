@@ -1,3 +1,5 @@
+#МЕТОД НАИМЕНЬШИХ КВАДРАТОВ
+
 import numpy as np
 import matplotlib.pyplot as plt
 from lab1.LU import lu_decomposition, solve_slu
@@ -49,8 +51,20 @@ print("Сумма квадратов ошибок (2-я степень):", sse_d
 
 # Графики
 x_plot = np.linspace(min(x), max(x), 500)
-y_deg1 = np.polyval(coeffs_deg1[::-1], x_plot)
-y_deg2 = np.polyval(coeffs_deg2[::-1], x_plot)
+
+
+def manual_polyval(coeffs, x):
+    y = 0
+    for power, coeff in enumerate(coeffs[::-1]):
+        y += coeff * (x ** power)
+    return y
+
+y_deg1 = manual_polyval(coeffs_deg1, x_plot)
+y_deg2 = manual_polyval(coeffs_deg2, x_plot)
+
+# y_deg1 = np.polyval(coeffs_deg1[::-1], x_plot)
+# y_deg2 = np.polyval(coeffs_deg2[::-1], x_plot)
+
 # y_deg3 = np.polyval(coeffs_deg3[::-1], x_plot)
 # y_deg6 = np.polyval(coeffs_deg6[::-1], x_plot)
 

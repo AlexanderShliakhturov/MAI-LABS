@@ -1,3 +1,5 @@
+#РЕШЕНИЕ КРАЕВОЙ ЗАДАЧИ ДЛЯ ОДУ 2 ПОРЯДКА МЕТОДОМ СТРЕЛЬБЫ
+
 import numpy as np
 import matplotlib.pyplot as plt
 from math import pi
@@ -68,6 +70,7 @@ def runge_kutta_method(a, b, h, y1_0, y2_0):
 # beta = y(1)
 def shooting_method(h, alpha, beta, a=0, b=1):
     #введем функцию для того, чтобы решать задачу Коши для alpha = y(0) и s = y'(0) 
+    #формула 4.33
     def phi(s): 
         xs, ys = runge_kutta_method(a, b, h, alpha, s)
         return ys[-1] - beta
@@ -78,6 +81,7 @@ def shooting_method(h, alpha, beta, a=0, b=1):
         f0, f1 = phi(s0), phi(s1)
         if abs(f1) < 1e-10:
             break
+        #формула 4.34 перехода к следующему шагу
         s2 = s1 - f1 * (s1 - s0) / (f1 - f0)
         s0, s1 = s1, s2
 

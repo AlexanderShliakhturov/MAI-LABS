@@ -1,3 +1,6 @@
+#ИНТЕРПОЛЯЦИОННЫЕ МНОГОЧЛЕНЫ ЛАГРАНЖА И НЬЮТОНА
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -19,6 +22,7 @@ def lagrange_interpolation(x, xi, yi):
         for j in range(n):
             if i != j:
                 li *= (x - xi[j]) / (xi[i] - xi[j])
+        #добавляем слагаемое в сумму
         Lx += yi[i] * li
     return Lx
 

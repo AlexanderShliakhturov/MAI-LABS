@@ -75,11 +75,11 @@ A = np.array([[-1, -2, -1, -4],
 # print("DET from numpy ", np.linalg.det(A))
 
 b = np.array([-12, 22, 51, 49], dtype=float)
-P, L, U = lu_decomposition(A)
+# P, L, U = lu_decomposition(A)
 
-# print(P@A)
+# # print(P@A)
 
-# print(L@U)
+# # print(L@U)
 
 # print("P = \n", P)
 # print("L = \n", L)

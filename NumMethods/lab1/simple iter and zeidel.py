@@ -1,5 +1,10 @@
 import numpy as np
 
+#Максимум суммы модулей элементов по строкам
+def matrix_inf_norm(alpha):
+    return max(np.sum(np.abs(alpha), axis=1))
+
+
 #система Ax = b
 def simple_iteration(A, b, tolerance=1e-10, max_iterations=1000):
     
@@ -19,6 +24,9 @@ def simple_iteration(A, b, tolerance=1e-10, max_iterations=1000):
         iterations += 1
 
     return x, iterations
+
+
+
 
 def zeidel_method(A, b, tolerance=1e-10, max_iterations=1000):
     n = len(b)

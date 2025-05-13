@@ -24,7 +24,7 @@ def jacobi_eigenvalue(A, tol=1e-20):
         max_abs_of_non_diag = np.argmax(np.abs(without_diag))
         p, q = np.unravel_index(max_abs_of_non_diag, A.shape)
         
-        print(np.unravel_index(max_abs_of_non_diag, A.shape))
+        # print(np.unravel_index(max_abs_of_non_diag, A.shape))
 
         theta = 0.5 * np.arctan(2 * A[p, q] / (A[p, p] - A[q, q])) if A[p, p] != A[q, q] else np.pi / 4
 
@@ -52,6 +52,10 @@ A = np.array([[-8, -4, 8],
               [8, 9, -5]])
 
 eigenvalues, eigenvectors, error_history = jacobi_eigenvalue(A, tol=1e-10)
+
+print(A@eigenvectors, "\n")
+
+
 
 print("Собственные значения:")
 print(eigenvalues)

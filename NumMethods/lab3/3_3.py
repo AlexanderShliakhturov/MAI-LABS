@@ -38,8 +38,8 @@ def fit_polynomial(x, y, degree):
 # Аппроксимация
 coeffs_deg1, sse_deg1 = fit_polynomial(x, y, degree=1)
 coeffs_deg2, sse_deg2 = fit_polynomial(x, y, degree=2)
-# coeffs_deg3, sse_deg3 = fit_polynomial(x, y, degree=3)
-# coeffs_deg6, sse_deg6 = fit_polynomial(x, y, degree=5)
+coeffs_deg3, sse_deg3 = fit_polynomial(x, y, degree=3)
+coeffs_deg6, sse_deg6 = fit_polynomial(x, y, degree=5)
 
 
 
@@ -62,11 +62,11 @@ def manual_polyval(coeffs, x):
 y_deg1 = manual_polyval(coeffs_deg1, x_plot)
 y_deg2 = manual_polyval(coeffs_deg2, x_plot)
 
-# y_deg1 = np.polyval(coeffs_deg1[::-1], x_plot)
-# y_deg2 = np.polyval(coeffs_deg2[::-1], x_plot)
+y_deg1 = np.polyval(coeffs_deg1[::-1], x_plot)
+y_deg2 = np.polyval(coeffs_deg2[::-1], x_plot)
 
-# y_deg3 = np.polyval(coeffs_deg3[::-1], x_plot)
-# y_deg6 = np.polyval(coeffs_deg6[::-1], x_plot)
+y_deg3 = np.polyval(coeffs_deg3[::-1], x_plot)
+y_deg6 = np.polyval(coeffs_deg6[::-1], x_plot)
 
 
 
@@ -74,8 +74,8 @@ plt.figure(figsize=(10, 6))
 plt.plot(x, y, 'ro', label='Исходные данные')
 plt.plot(x_plot, y_deg1, 'b-', label='МНК: степень 1')
 plt.plot(x_plot, y_deg2, 'g--', label='МНК: степень 2')
-# plt.plot(x_plot, y_deg3, 'r--', label='МНК: степень 3')
-# plt.plot(x_plot, y_deg6, 'b--', label='МНК: степень 6')
+plt.plot(x_plot, y_deg3, 'r--', label='МНК: степень 3')
+plt.plot(x_plot, y_deg6, 'b--', label='МНК: степень 6')
 
 
 plt.xlabel('x')

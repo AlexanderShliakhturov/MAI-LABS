@@ -1,6 +1,5 @@
 #ИНТЕРПОЛЯЦИОННЫЕ МНОГОЧЛЕНЫ ЛАГРАНЖА И НЬЮТОНА
 
-
 import numpy as np
 import matplotlib.pyplot as plt
 

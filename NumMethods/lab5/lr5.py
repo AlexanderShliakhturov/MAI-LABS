@@ -52,21 +52,22 @@ def progonka(a, b, c, d):
     return x
 
 def apply_boundary_conditions(u, dx, t, alpha, bc_approx="two_point_first"):
-    """
-    Аппроксимирует граничные условия по выбранной схеме.
-    Поддерживаются варианты:
-      - two_point_first
-      - three_point_second
-      - two_point_second
-    """
-    # Коэффициенты задачи Робена (для Дирихле b=0)
+
+    # Коэффициенты задачи Робена
+    # a*u + b* du/dx = c
+    
     a_left, b_left = 1.0, 0.0
     a_right, b_right = 1.0, 0.0
     c_left = boundary_left(t, alpha)
     c_right = boundary_right(t, alpha)
 
     if bc_approx == "two_point_first":
-        # du/dx ≈ (u1 - u0)/dx
+        # du/dx = (u1 - u0)/dx
+        # a_left*u0 + b_left*(u1-u0)/dx = c_left ==>>> u0 = c_left - (b_left/dx)*u1 / ((a_left - b_left)/dx)
+        
+        #так же можно еще и правую границу выразить
+        # un = (c_right + (b_right/dx)u_n-1) / (a_right + b_right/dx)
+        
         u[0] = (c_left - (b_left/dx)*u[1]) / (a_left - b_left/dx)
         u[-1] = (c_right + (b_right/dx)*u[-2]) / (a_right + b_right/dx)
 
@@ -99,7 +100,7 @@ def compute_errors(u_num, x, t, alpha=alpha):
 
 
 #Nx, Nt - число интервалов по времени и по координате x 
-def explicit_scheme(Nx, Nt, T, alpha):
+def explicit_scheme(Nx, Nt, T, alpha, bc_approx = "two_point_first"):
     #определяем шаги по времени и по координате x
     dx = L / Nx
     dt = T / Nt
@@ -116,8 +117,11 @@ def explicit_scheme(Nx, Nt, T, alpha):
     # формируем массив значений на текущем временном слое. Изначально на основе начальных условий
     u = initial_condition(x)
     # Уточняем граничными условиями
-    u[0] = boundary_left(0, alpha)
-    u[-1] = boundary_right(0, alpha)
+    if bc_approx:
+        u = apply_boundary_conditions(u, dx, 0, alpha, bc_approx)
+    else:
+        u[0] = boundary_left(0, alpha)
+        u[-1] = boundary_right(0, alpha)
 
     #на каждом временном шаге
     for n in range(Nt):
@@ -132,14 +136,18 @@ def explicit_scheme(Nx, Nt, T, alpha):
         
         # граничные условия (время t_np1)
         #устанавлиеваем краевые значения в соответствии с условиями
-        u_new[0] = boundary_left(t_np1, alpha)
-        u_new[-1] = boundary_right(t_np1, alpha)
+        if bc_approx:
+            u_new = apply_boundary_conditions(u_new, dx, t_np1, alpha, bc_approx)
+        else:
+            u_new[0] = boundary_left(t_np1, alpha)
+            u_new[-1] = boundary_right(t_np1, alpha)
+            
         u = u_new
     
     # вернем массивы: разбиение по x, разбиение по времени, значения функции
     return x, t_grid, u
 
-def implicit_scheme(Nx, Nt, T, alpha):
+def implicit_scheme(Nx, Nt, T, alpha, bc_approx="two_point_first"):
 
     #получаем разбиение аналогично явной схеме
     dx = L / Nx
@@ -160,8 +168,12 @@ def implicit_scheme(Nx, Nt, T, alpha):
 
     # initial
     u = initial_condition(x)
-    u[0] = boundary_left(0, alpha)
-    u[-1] = boundary_right(0, alpha)
+    
+    if bc_approx:
+        u = apply_boundary_conditions(u, dx, 0, alpha, bc_approx)
+    else:
+        u[0] = boundary_left(0, alpha)
+        u[-1] = boundary_right(0, alpha)
 
     for n in range(Nt):
         
@@ -174,13 +186,16 @@ def implicit_scheme(Nx, Nt, T, alpha):
         u_in = progonka(a, b, c, d)
         u[1:-1] = u_in
         # Подставляем граничные значения
-        u[0] = boundary_left(t_np1, alpha)
-        u[-1] = boundary_right(t_np1, alpha)
+        if bc_approx:
+            u = apply_boundary_conditions(u, dx, t_np1, alpha, bc_approx)
+        else:
+            u[0] = boundary_left(t_np1, alpha)
+            u[-1] = boundary_right(t_np1, alpha)
         
     # вернем массивы: разбиение по x, разбиение по времени, значения функции
     return x, t_grid, u
 
-def crank_nicolson_scheme(Nx, Nt, T, alpha):
+def crank_nicolson_scheme(Nx, Nt, T, alpha, bc_approx="two_point_first"):
     
     # Создаем разбиение
     dx = L / Nx
@@ -191,9 +206,12 @@ def crank_nicolson_scheme(Nx, Nt, T, alpha):
 
     #вписываем начальные и граничные условия
     u = np.zeros(Nx+1)
-    u[:] = initial_condition(x)
-    u[0] = boundary_left(0, alpha)
-    u[-1] = boundary_right(0, alpha)
+    u = initial_condition(x)
+    if bc_approx:
+         u = apply_boundary_conditions(u, dx, 0, alpha, bc_approx)
+    else:
+        u[0] = boundary_left(0, alpha)
+        u[-1] = boundary_right(0, alpha)
 
     #число внутренних узлов
     n_in = Nx - 1
@@ -230,6 +248,7 @@ def crank_nicolson_scheme(Nx, Nt, T, alpha):
         left_next = boundary_left(t_np1, alpha)
         right_next = boundary_right(t_np1, alpha)
 
+        #добавляем вклад граничных условий
         d[0] += r * (left_next + left_now)
         d[-1] += r * (right_next + right_now)
 
@@ -238,12 +257,15 @@ def crank_nicolson_scheme(Nx, Nt, T, alpha):
 
         # обновляем решение
         u[1:-1] = u_in_next
-        u[0] = left_next
-        u[-1] = right_next
+        if bc_approx:
+            u = apply_boundary_conditions(u, dx, t_np1, alpha, bc_approx)
+        else:
+            u[0] = left_next
+            u[-1] = right_next
 
     return x, t_grid, u
 
-def refinement_study(scheme_fn, Nx_list, T, alpha, dt_formula='stable', Nt_manual=None):
+def refinement_study(scheme_fn, Nx_list, T, alpha, dt_formula='stable', Nt_manual=None, bc_approx = None):
 
     dx_list = []
     err_max_list = []
@@ -267,7 +289,7 @@ def refinement_study(scheme_fn, Nx_list, T, alpha, dt_formula='stable', Nt_manua
             raise ValueError("Unknown dt_formula")
 
         # run scheme
-        x, t_grid, u_num = scheme_fn(Nx, Nt, T, alpha)
+        x, t_grid, u_num = scheme_fn(Nx, Nt, T, alpha, bc_approx = bc_approx)
         err_max, err_L2 = compute_errors(u_num, x, T, alpha)
         dx_list.append(dx)
         err_max_list.append(err_max)
@@ -278,6 +300,7 @@ def refinement_study(scheme_fn, Nx_list, T, alpha, dt_formula='stable', Nt_manua
 if __name__ == "__main__":
     # параметры
     alpha = 1.0
+    bc_approx="three_point_second"
     
     t_range = [0.25, 0.5, 1, 2]
 
@@ -294,9 +317,23 @@ if __name__ == "__main__":
         print("Explicit: dx=", dx, "dt=", dt_explicit, "r=", alpha*dt_explicit/dx**2)
 
         # Запуск схем
-        x_e, t_e, u_e = explicit_scheme(Nx, Nt_explicit, T, alpha)
-        x_i, t_i, u_i = implicit_scheme(Nx, Nt_explicit, T, alpha)
-        x_cn, t_cn, u_cn = crank_nicolson_scheme(Nx, Nt_explicit, T, alpha)
+        x_e, t_e, u_e = explicit_scheme(Nx, 
+                                        Nt_explicit, 
+                                        T, 
+                                        alpha,
+                                        bc_approx=bc_approx)
+        
+        x_i, t_i, u_i = implicit_scheme(Nx, 
+                                        Nt_explicit, 
+                                        T, 
+                                        alpha,
+                                        bc_approx=bc_approx)
+        
+        x_cn, t_cn, u_cn = crank_nicolson_scheme(Nx, 
+                                                Nt_explicit, 
+                                                T, 
+                                                alpha,
+                                                bc_approx=bc_approx)
 
         # аналитическое решение
         u_ex = exact_solution(x_e, T, alpha)
@@ -324,15 +361,48 @@ if __name__ == "__main__":
         plt.grid(True)
         # plt.show()
         plt.savefig(f"comparison for t={T}.png")
+        
+        # --- График зависимости ошибки от координаты x ---
+        error_e = np.abs(u_e - u_ex)
+        error_i = np.abs(u_i - u_ex)
+        error_cn = np.abs(u_cn - u_ex)
+
+        plt.figure(figsize=(8,5))
+        plt.plot(x_e, error_e, '--o', label='Explicit')
+        plt.plot(x_i, error_i, ':s', label='Implicit BE')
+        plt.plot(x_cn, error_cn, '-.d', label='Crank-Nicolson')
+        plt.xlabel('x')
+        plt.ylabel('|u_num - u_exact|')
+        plt.title(f'Error vs x at t={T:.3f}')
+        plt.legend()
+        plt.grid(True)
+        plt.savefig(f"error_vs_x_t={T}.png")
+        # plt.show()
+        plt.savefig(f"Coordinate and errors for t={T}.png")
 
         # Проведём исследование со сжатием сетки
         Nx_list = [20, 40, 80, 160]
         print("\n--- Experiment: Explicit ---")
-        dxs_e, errs_e_max, errs_e_L2 = refinement_study(explicit_scheme, Nx_list, T, alpha, dt_formula='stable')
+        dxs_e, errs_e_max, errs_e_L2 = refinement_study(explicit_scheme, 
+                                                        Nx_list, 
+                                                        T, 
+                                                        alpha, 
+                                                        dt_formula='stable',
+                                                        bc_approx=bc_approx)
         print("\n--- Experiment study: Implicit ")
-        dxs_i, errs_i_max, errs_i_L2 = refinement_study(implicit_scheme, Nx_list, T, alpha, dt_formula='dt_proportional_dx2')
+        dxs_i, errs_i_max, errs_i_L2 = refinement_study(implicit_scheme, 
+                                                        Nx_list, 
+                                                        T, 
+                                                        alpha, 
+                                                        dt_formula='dt_proportional_dx2',
+                                                        bc_approx=bc_approx)
         print("\n--- Experiment study: Crank-Nicolson")
-        dxs_cn, errs_cn_max, errs_cn_L2 = refinement_study(crank_nicolson_scheme, Nx_list, T, alpha, dt_formula='dt_proportional_dx2')
+        dxs_cn, errs_cn_max, errs_cn_L2 = refinement_study(crank_nicolson_scheme, 
+                                                           Nx_list, 
+                                                           T, 
+                                                           alpha, 
+                                                           dt_formula='dt_proportional_dx2',
+                                                           bc_approx=bc_approx)
 
         # Лог-лог графики для оценки порядка сходимости
         plt.figure(figsize=(8,5))
